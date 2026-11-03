@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>AR Smart Manual mockups</title>
+<style>body{font-family:system-ui,sans-serif;max-width:1100px;margin:20px auto;padding:0 16px;color:#222}.subtitle{color:#666}.options{display:flex;gap:24px;flex-wrap:wrap}.option{border:1px solid #ddd;border-radius:12px;padding:14px;flex:1;min-width:260px}.letter{font-weight:700;color:#0a84a8}</style></head><body>
+<style>
+  .row { display:flex; gap:22px; flex-wrap:wrap; justify-content:center; margin:18px 0 8px; }
+  .phone { width:210px; height:420px; border-radius:28px; background:#111; padding:9px; box-shadow:0 6px 20px rgba(0,0,0,.25); flex-shrink:0; }
+  .screen { position:relative; width:100%; height:100%; border-radius:20px; overflow:hidden;
+            background:linear-gradient(180deg,#8a8f96 0%,#b9b3a8 55%,#a39b8e 100%); font-family:system-ui,sans-serif; }
+  .table { position:absolute; left:0; right:0; bottom:0; height:55%; background:linear-gradient(180deg,#c9b89c,#a8916f); }
+  .device { position:absolute; left:50%; top:46%; width:92px; height:118px; transform:translate(-50%,-50%) perspective(300px) rotateX(28deg);
+            background:#f2f2f0; border-radius:12px; box-shadow:0 8px 14px rgba(0,0,0,.35); }
+  .device.back { background:#e6e6e3; }
+  .epaper { position:absolute; left:12px; right:12px; top:14px; height:52px; background:#dcdcd4; border-radius:4px; font-size:15px; font-weight:600; color:#333; display:flex; align-items:center; justify-content:center; }
+  .lid { position:absolute; left:14px; right:14px; top:40px; height:56px; border-radius:6px; background:#dcdcd8; border:1px solid #bbb; }
+  .ghost { position:absolute; left:14px; right:14px; top:40px; height:56px; border-radius:6px;
+           background:rgba(0,190,255,.25); border:2px solid #22d3ff; box-shadow:0 0 14px #22d3ff; transform:translateY(-30px); }
+  .glow { border:2px solid #22d3ff !important; box-shadow:0 0 14px #22d3ff; }
+  .arrow { position:absolute; left:50%; top:24%; transform:translateX(-50%); color:#22d3ff; font-size:30px; font-weight:700; text-shadow:0 0 8px #22d3ff; }
+  .outline { position:absolute; left:50%; top:46%; width:100px; height:126px; transform:translate(-50%,-50%); border:2px dashed #fff; border-radius:14px; }
+  .card { position:absolute; left:8px; right:8px; top:10px; background:rgba(255,255,255,.93); border-radius:10px; padding:7px 9px; font-size:10.5px; color:#222; }
+  .card b { display:block; font-size:9px; color:#0a84a8; letter-spacing:.04em; }
+  .prog { height:4px; background:#ddd; border-radius:2px; margin-top:5px; } .prog i { display:block; height:100%; width:33%; background:#0a84a8; border-radius:2px; }
+  .subs { position:absolute; left:8px; right:8px; bottom:60px; font-size:10px; line-height:1.35; }
+  .sub { background:rgba(0,0,0,.78); color:#fff; padding:4px 7px; border-radius:6px; margin-top:4px; }
+  .sub.you { color:#ffd76a; }
+  .mic { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); width:40px; height:40px; border-radius:50%; background:#0a84a8; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 0 0 4px rgba(10,132,168,.3); }
+  .navbtn { position:absolute; bottom:18px; font-size:10px; background:rgba(255,255,255,.9); border-radius:12px; padding:5px 9px; color:#222; }
+  .banner { position:absolute; left:8px; right:8px; top:10px; background:#ffcf40; border-radius:8px; padding:6px 8px; font-size:10px; color:#222; }
+  .virtual { position:absolute; left:50%; top:47%; width:90px; height:116px; transform:translate(-50%,-50%) rotate(-12deg); background:rgba(255,255,255,.75); border:2px solid #22d3ff; border-radius:12px; }
+  .cap { text-align:center; font-size:12px; margin-top:8px; max-width:210px; }
+  .sheet { position:absolute; left:0; right:0; bottom:0; height:44%; background:#fff; border-radius:16px 16px 0 0; padding:9px 10px; font-size:10px; color:#222; }
+  .sheet .st { padding:3px 0; color:#888; } .sheet .st.now { color:#0a84a8; font-weight:700; }
+  .sheet .mic { bottom:10px; left:auto; right:10px; transform:none; width:34px; height:34px; font-size:15px; }
+  .smallsub { position:absolute; left:8px; right:8px; bottom:47%; font-size:10px; }
+</style>
+
+<h2>AR Smart Manual: battery change, screen by screen</h2>
+<p class="subtitle">Rough wireframes. The grey/beige background stands for the live camera image; the white box is the real thermometer; cyan = AR overlay drawn by the app.</p>
+
+<h3>1 · The journey</h3>
+<div class="row">
+  <div>
+    <div class="phone"><div class="screen"><div class="table"></div>
+      <div class="outline"></div>
+      <div class="card"><b>FIND YOUR DEVICE</b>Point the camera at the thermometer and match the outline.</div>
+      <div class="subs"><div class="sub">Assistant: Hi! What do you need help with?</div></div>
+      <div class="mic">🎤</div>
+    </div></div>
+    <p class="cap"><b>Start:</b> the outline from your CAD model shows how to aim the phone. Once matched, the device is tracked.</p>
+  </div>
+
+  <div>
+    <div class="phone"><div class="screen"><div class="table"></div>
+      <div class="device back"><div class="lid glow"></div><div class="ghost"></div></div>
+      <div class="arrow">↑</div>
+      <div class="card"><b>STEP 2 OF 6</b>Slide the battery lid up.<div class="prog"><i></i></div></div>
+      <div class="subs"><div class="sub">Assistant: Push the lid up with your thumb.</div></div>
+      <div class="navbtn" style="left:10px">↺ Repeat</div><div class="mic">🎤</div><div class="navbtn" style="right:10px">Done ✓</div>
+    </div></div>
+    <p class="cap"><b>Step:</b> real lid glows, the ghost lid slides off in a loop, arrow shows the direction.</p>
+  </div>
+
+  <div>
+    <div class="phone"><div class="screen"><div class="table"></div>
+      <div class="device back"><div class="lid" style="background:#3a3a3a; border-color:#3a3a3a"></div>
+        <div style="position:absolute;left:20px;top:46px;width:22px;height:44px;border-radius:5px;background:rgba(0,190,255,.35);border:2px solid #22d3ff;box-shadow:0 0 10px #22d3ff;color:#fff;font-size:12px;text-align:center">+</div>
+        <div style="position:absolute;right:20px;top:46px;width:22px;height:44px;border-radius:5px;background:rgba(0,190,255,.35);border:2px solid #22d3ff;box-shadow:0 0 10px #22d3ff;color:#fff;font-size:12px;text-align:center;padding-top:28px;box-sizing:border-box">+</div>
+      </div>
+      <div class="card"><b>STEP 4 OF 6</b>Insert two new AAA batteries.<div class="prog"><i style="width:66%"></i></div></div>
+      <div class="subs"><div class="sub you">You: Which way do the batteries go?</div><div class="sub">Assistant: The flat end goes against the spring. I've marked the + ends.</div></div>
+      <div class="mic" style="background:#e5484d;box-shadow:0 0 0 6px rgba(229,72,77,.3)">🎤</div>
+    </div></div>
+    <p class="cap"><b>Voice question:</b> your words (yellow) and the answer (white) as subtitles; the assistant highlights the right parts.</p>
+  </div>
+
+  <div>
+    <div class="phone"><div class="screen"><div class="table"></div>
+      <div class="virtual"><div class="ghost" style="left:12px;right:12px"></div></div>
+      <div class="banner">⚠ Lost the device. Showing a 3D copy. Point the camera at it to return.</div>
+      <div class="subs"><div class="sub">Assistant: Here's the step on a model while I look for your device.</div></div>
+      <div class="mic">🎤</div>
+    </div></div>
+    <p class="cap"><b>Backup:</b> if tracking is lost, a virtual copy keeps playing the step.</p>
+  </div>
+</div>
+
+<h3 style="margin-top:28px">2 · Which layout for the step screen?</h3>
+<p class="subtitle">Click one. Both have the same content; the difference is how much of the camera view stays free.</p>
+
+<div class="options">
+  <div class="option" data-choice="a">
+    <div class="letter">A</div>
+    <div class="content">
+      <div class="phone" style="margin:6px 0"><div class="screen"><div class="table"></div>
+        <div class="device back"><div class="lid glow"></div><div class="ghost"></div></div><div class="arrow">↑</div>
+        <div class="card"><b>STEP 2 OF 6</b>Slide the battery lid up.<div class="prog"><i></i></div></div>
+        <div class="subs"><div class="sub">Assistant: Push the lid up with your thumb.</div></div>
+        <div class="navbtn" style="left:10px">↺ Repeat</div><div class="mic">🎤</div><div class="navbtn" style="right:10px">Done ✓</div>
+      </div></div>
+      <h3>Full camera view</h3>
+      <p>Small step card on top, subtitles and buttons float at the bottom. Most AR space, best for the video.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b">
+    <div class="letter">B</div>
+    <div class="content">
+      <div class="phone" style="margin:6px 0"><div class="screen"><div class="table" style="height:60%"></div>
+        <div class="device back" style="top:30%;width:76px;height:98px"><div class="lid glow" style="top:32px;height:46px"></div><div class="ghost" style="top:32px;height:46px"></div></div>
+        <div class="smallsub"><div class="sub">Assistant: Push the lid up with your thumb.</div></div>
+        <div class="sheet"><b style="color:#0a84a8">Battery change · 2/6</b>
+          <div class="st">✓ 1. Place device face-down</div>
+          <div class="st now">▸ 2. Slide the battery lid up</div>
+          <div class="st">3. Remove old batteries</div>
+          <div class="st">4. Insert new batteries</div>
+          <div class="mic">🎤</div></div>
+      </div></div>
+      <h3>Step list panel</h3>
+      <p>Bottom panel shows all steps and progress, like a checklist. Clearer overview, but less camera space.</p>
+    </div>
+  </div>
+</div>
+
+</body></html>

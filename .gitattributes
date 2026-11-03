@@ -1,0 +1,39 @@
+* text=auto
+
+# Unity text assets
+*.cs        text diff=csharp
+*.unity     text eol=lf
+*.prefab    text eol=lf
+*.asset     text eol=lf
+*.mat       text eol=lf
+*.meta      text eol=lf
+
+# ---------- Git LFS: large binary files ----------
+# 3D / CAD
+*.fbx  filter=lfs diff=lfs merge=lfs -text
+*.obj  filter=lfs diff=lfs merge=lfs -text
+*.glb  filter=lfs diff=lfs merge=lfs -text
+*.stl  filter=lfs diff=lfs merge=lfs -text
+*.f3d  filter=lfs diff=lfs merge=lfs -text
+*.f3z  filter=lfs diff=lfs merge=lfs -text
+*.step filter=lfs diff=lfs merge=lfs -text
+*.stp  filter=lfs diff=lfs merge=lfs -text
+# Images
+*.png  filter=lfs diff=lfs merge=lfs -text
+*.jpg  filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.psd  filter=lfs diff=lfs merge=lfs -text
+*.tga  filter=lfs diff=lfs merge=lfs -text
+*.tif  filter=lfs diff=lfs merge=lfs -text
+*.exr  filter=lfs diff=lfs merge=lfs -text
+*.hdr  filter=lfs diff=lfs merge=lfs -text
+# Audio / video
+*.wav  filter=lfs diff=lfs merge=lfs -text
+*.mp3  filter=lfs diff=lfs merge=lfs -text
+*.ogg  filter=lfs diff=lfs merge=lfs -text
+*.mp4  filter=lfs diff=lfs merge=lfs -text
+*.mov  filter=lfs diff=lfs merge=lfs -text
+# Vuforia (package tarball in Packages/, Model Target database in StreamingAssets/)
+*.tgz  filter=lfs diff=lfs merge=lfs -text
+*.dat  filter=lfs diff=lfs merge=lfs -text
+*.unitypackage filter=lfs diff=lfs merge=lfs -text
