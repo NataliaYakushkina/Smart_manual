@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+<Tracking>
+<ModelTarget name="Termometer_FaceUp" motionHint="adaptive" trackingMode="car" optimizeTrackingFor="default"/>
+
+</Tracking>
+
+<Assembly name="Termometer_FaceUps_assembly" assemblyId="587ba79a1df6401fa1bd741e5e859ca1">
+<Part name="Termometer_FaceUp" translation="0 0 0" rotation="AD: 0 0 1 0"/>
+<EntryPoint name="GuideView_0000" translation="-0.00345767 0.00184084 0.121167" rotation="AD: 0.999988 -0.129046 0.0391848 146.504" trained="no">
+
+</EntryPoint>
+
+</Assembly>
+
+</QCARConfig>
