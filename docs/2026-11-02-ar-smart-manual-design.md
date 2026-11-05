@@ -21,7 +21,7 @@ Mockups: [mockups/app-flow.html](mockups/app-flow.html) (open in a browser).
 
 1. **CAD → AR pipeline:** the 1:1 Fusion model of the thermometer, split into named components, imported into Unity.
 2. **Overlay on the real device:** the app recognises the physical thermometer from its CAD shape and draws highlights, arrows and "ghost" animations exactly on top of it.
-3. **Procedures as data:** steps are described in a data file (which part to highlight, which animation, what text), not hard-coded. Battery change is the first procedure; more (wall mounting, °C/°F switch) can be added later without new code.
+3. **Procedures as data:** steps are described in a data file (which part to highlight, which animation, what text), not hard-coded. Battery change is the first procedure, the °C/°F switch the second; more (e.g. wall mounting) can be added later without new code.
 4. **Voice AI assistant:** the user asks in their own words; the assistant answers out loud and as a subtitle, and highlights parts / jumps to steps via tool calls.
 5. **Demo video** recorded with Android's screen recorder.
 
@@ -69,6 +69,8 @@ Marked by who made the call.
 - **Unity 6.3 (6000.3.28f1) instead of the Vuforia-certified Unity 6.0.** Vuforia 11.4.4 officially lists only Unity 6.0 LTS; the face-up tracking test on the phone worked on 6.3. *Natalia.*
 - **One Model Target per resting orientation:** `Termometer_FaceUp` (up vector +Z) and `Termometer_FaceDown` (up vector −Z), each with one standard guide view. Only one target is active at a time; the step engine activates the one the current step needs (step data field `target`). *Claude's call.*
 - **Part names are set in Fusion** (source of truth) and flow through FBX into Unity; parts are not renamed in Unity. *Claude's call.*
+- **Procedure file + step engine + LLM on top** (not LLM-only). The procedure file is the single source of truth for the steps. The step engine is the guaranteed path (Done/Repeat buttons, works offline, same every time). The LLM reads the same file as context and drives the same engine functions via tool calls (`go_to_step`, `replay_animation`, `highlight_part`, …), so it cannot invent steps. *Natalia, on Claude's recommendation (2026-11-05).*
+- **The assistant also answers general questions about the device**, e.g. what the numbers and icons on the display mean, and points at them in AR. *Natalia.*
 
 ## 7. CAD model requirements
 
@@ -85,7 +87,8 @@ Marked by who made the call.
 | Polarity markers (Unity only) | polarity hint, x-ray | contacts are not modelled; empty marker objects `Polarity_Plus` / `Polarity_Minus` are added in the Unity prefab. **+ is on the left**, seen from the open compartment with the device face-down |
 | `Low_metal_plate`, `Top_metal_plate` | look only | decorative metal plates on the top and the back |
 | `Display` | later procedures, AI questions | |
-| `UnitButton` (°F/°C) | later procedure | |
+| `UnitButton` (°F/°C) | °C/°F procedure | on the back, top right (device face-down) |
+| Display markers (Unity only) | AI questions, pointers | `Display_Temperature`, `Display_TemperatureUnit`, `Display_Humidity`, `Display_ComfortIcon`: empty objects over the matching spot of the segment LCD |
 | Wall-mount keyhole | later procedure | stays part of the housing; marker point added in Unity |
 
 Export from Fusion as FBX to `CAD/export/Thermometer.fbx` (history is kept by git). The FBX is in **millimetres**; Unity converts it to metres on import. In Unity the current version is copied to a fixed name (`Assets/_Project/Models/Thermometer/Thermometer.fbx`) so prefabs and scenes keep their links. As long as the **outer shape and the origin** don't change, the Model Targets stay valid and need no new generation. Pivots matter only for rotating parts.
@@ -114,9 +117,17 @@ Expected Model Target per step: steps 1–5 **FaceDown**, step 6 **FaceUp** (see
 3. Remove the old battery (ghost battery lifts out).
 4. Insert a new AAA battery, **+ to the left** (ghost battery drops in, + / − labels, contacts highlighted).
 5. Slide the lid back on until it clicks.
-6. Turn the device over and press the °F/°C button: the display should change. *(An e-paper display keeps its last image without power, so just looking at it proves nothing. Claude's call.)*
+6. Turn the device over to see the temperature on the display. *Natalia.*
 
 The user moves on by tapping **Done ✓** or saying "done" / "next". **↺ Repeat** replays the step.
+
+### Second procedure: switch between °C and °F *(Natalia, 2026-11-05)*
+
+1. Place the thermometer face-down on the table. (FaceDown)
+2. Press the button at the top right (`UnitButton` glows). (FaceDown)
+3. Turn the device over to see the temperature in the new unit (pointer on `Display_TemperatureUnit`). (FaceUp)
+
+**Files:** `Assets/_Project/Data/Procedures/battery_change.json`, `unit_switch.json`; device facts in `Assets/_Project/Data/device_facts.md`. The display is a **segment LCD** (temperature with °C/°F at the top, humidity in % at the bottom, comfort face icon bottom left), so reading the temperature after the battery change does show that the device has power.
 
 ## 10. The AI assistant
 
@@ -127,8 +138,13 @@ The user moves on by tapping **Done ✓** or saying "done" / "next". **↺ Repea
 
 **What the assistant knows and does**
 - Context: the device's part list and the procedure steps from the data file, plus a short **device facts file** written by Natalia (battery: **1× AAA**, + on the left seen from the open compartment; display icons such as the low-battery symbol, °F/°C button, wall mounting). If a manufacturer paper manual exists, it is the source for that file. *Claude's call.*
+- **Two kinds of questions:**
+  - *About the current step* ("which way does the battery go?"): answered from the procedure file, often with `highlight_part` / `show_xray()`.
+  - *General questions about the device* ("what do the numbers on the display mean?", "what is the small icon?"): answered from the device facts file, with `point_at` on the matching display area.
+- **The device facts file must describe the display completely:** each value (e.g. temperature, humidity), its unit and position on the display, and each icon (low battery, comfort indicator, trend arrows, … whatever the real device shows). Natalia writes it from the real device. *Claude's call.*
+- **Display areas as markers:** empty marker objects in the Unity prefab (e.g. `Display_Temperature`, `Display_Humidity`, one per icon), placed over the matching spot on the display, like the polarity markers. The names match the facts file.
 - A small set of test questions checks that it refuses what isn't in the manual (e.g. "can I use rechargeable batteries?" when the facts file doesn't say).
-- Tools it can call (first set): `highlight_part(name)`, `go_to_step(n)`, `replay_animation()`, `show_xray()`.
+- Tools it can call (first set): `highlight_part(name)` (CAD parts), `point_at(marker)` (arrow/ring on a marker, e.g. a display area), `go_to_step(n)`, `replay_animation()`, `show_xray()`.
 - It answers **only** from this content (see anti-goals).
 
 **Architecture (reused from the thesis)**
@@ -171,7 +187,6 @@ See [mockups/app-flow.html](mockups/app-flow.html).
 - ~~Battery type and count, and how the lid opens.~~ 1× AAA; lid slides straight down. Open: is there a latch to press?
 - Which Android phone model? (check Vuforia/ARCore support; tracking already works on Natalia's phone)
 - **Vuforia watermark:** with the Basic plan, Model Target builds show "Premium Trial Feature App – Not for Distribution" and a honeycomb pattern. Accept it in the demo video, or ask Vuforia about a student/academic licence or a time-limited Premium trial before recording (build step 8)?
-- Where is the °C/°F button: on the back or the front? If it is on the back, step 6 becomes "press the button (face-down), then turn over and check the display".
 - LLM provider: keep the provider from the thesis code, or switch.
 - Speech-to-text and text-to-speech: cloud services or Android's built-in ones.
 

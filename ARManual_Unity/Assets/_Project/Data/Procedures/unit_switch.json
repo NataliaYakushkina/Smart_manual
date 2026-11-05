@@ -1,0 +1,30 @@
+{
+  "id": "unit_switch",
+  "title": "Switch between °C and °F",
+  "steps": [
+    {
+      "text": "Place the thermometer face-down on the table.",
+      "target": "FaceDown",
+      "highlight": [],
+      "pointAt": [],
+      "animation": "",
+      "xray": false
+    },
+    {
+      "text": "Press the button at the top right.",
+      "target": "FaceDown",
+      "highlight": ["UnitButton"],
+      "pointAt": [],
+      "animation": "ButtonPress",
+      "xray": false
+    },
+    {
+      "text": "Turn the device over to see the temperature in the new unit.",
+      "target": "FaceUp",
+      "highlight": [],
+      "pointAt": ["Display_TemperatureUnit"],
+      "animation": "",
+      "xray": false
+    }
+  ]
+}

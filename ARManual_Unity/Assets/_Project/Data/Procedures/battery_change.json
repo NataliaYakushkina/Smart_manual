@@ -1,0 +1,54 @@
+{
+  "id": "battery_change",
+  "title": "Change the battery",
+  "steps": [
+    {
+      "text": "Place the thermometer face-down on the table.",
+      "target": "FaceDown",
+      "highlight": [],
+      "pointAt": [],
+      "animation": "",
+      "xray": false
+    },
+    {
+      "text": "Slide the battery lid straight down and off.",
+      "target": "FaceDown",
+      "highlight": ["BatteryLid"],
+      "pointAt": [],
+      "animation": "LidSlideOff",
+      "xray": false
+    },
+    {
+      "text": "Remove the old battery.",
+      "target": "FaceDown",
+      "highlight": ["Battery"],
+      "pointAt": [],
+      "animation": "BatteryLiftOut",
+      "xray": false
+    },
+    {
+      "text": "Insert a new AAA battery, + to the left.",
+      "target": "FaceDown",
+      "highlight": ["Battery"],
+      "pointAt": ["Polarity_Plus", "Polarity_Minus"],
+      "animation": "BatteryDropIn",
+      "xray": true
+    },
+    {
+      "text": "Slide the lid back on until it clicks.",
+      "target": "FaceDown",
+      "highlight": ["BatteryLid"],
+      "pointAt": [],
+      "animation": "LidSlideOn",
+      "xray": false
+    },
+    {
+      "text": "Turn the device over to see the temperature.",
+      "target": "FaceUp",
+      "highlight": [],
+      "pointAt": ["Display_Temperature"],
+      "animation": "",
+      "xray": false
+    }
+  ]
+}
