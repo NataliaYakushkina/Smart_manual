@@ -6,7 +6,9 @@
       "text": "Place the thermometer face-down on the table.",
       "target": "FaceDown",
       "highlight": [],
+      "outline": [],
       "pointAt": [],
+      "hide": [],
       "animation": "",
       "xray": false
     },
@@ -14,15 +16,19 @@
       "text": "Slide the battery lid straight down and off.",
       "target": "FaceDown",
       "highlight": ["BatteryLid"],
+      "outline": [],
       "pointAt": [],
+      "hide": [],
       "animation": "LidSlideOff",
-      "xray": false
+      "xray": true
     },
     {
       "text": "Remove the old battery.",
       "target": "FaceDown",
       "highlight": ["Battery"],
+      "outline": [],
       "pointAt": [],
+      "hide": ["BatteryLid"],
       "animation": "BatteryLiftOut",
       "xray": false
     },
@@ -30,15 +36,19 @@
       "text": "Insert a new AAA battery, + to the left.",
       "target": "FaceDown",
       "highlight": ["Battery"],
+      "outline": [],
       "pointAt": ["Polarity_Plus", "Polarity_Minus"],
+      "hide": ["BatteryLid"],
       "animation": "BatteryDropIn",
-      "xray": true
+      "xray": false
     },
     {
       "text": "Slide the lid back on until it clicks.",
       "target": "FaceDown",
       "highlight": ["BatteryLid"],
+      "outline": [],
       "pointAt": [],
+      "hide": [],
       "animation": "LidSlideOn",
       "xray": false
     },
@@ -46,7 +56,9 @@
       "text": "Turn the device over to see the temperature.",
       "target": "FaceUp",
       "highlight": [],
+      "outline": [],
       "pointAt": ["Display_Temperature"],
+      "hide": [],
       "animation": "",
       "xray": false
     }

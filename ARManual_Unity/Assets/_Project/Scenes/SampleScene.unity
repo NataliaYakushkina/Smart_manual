@@ -187,10 +187,16 @@ MonoBehaviour:
   - key: FaceDown
     target: {fileID: 1407001543}
   defaultTarget: FaceUp
-  baseMaterial: {fileID: 2100000, guid: 623cb0c743f47c845b0cb9a6a50232b8, type: 2}
+  occluderMaterial: {fileID: 2100000, guid: 0cdb9b6cd7d6c7f4295b28d3920b37b7, type: 2}
   highlightMaterial: {fileID: 2100000, guid: c1d18e144a9a34e499d0ad0eb937a822, type: 2}
+  xrayParts:
+  - part: Battery
+    material: {fileID: 2100000, guid: 88881b36e1179fe4abe1c7c6b0e40dbf, type: 2}
   pointerPrefab: {fileID: 0}
   pointerSize: 0.006
+  ringGap: 0.002
+  ringWidth: 0.0015
+  ringLift: 0.0003
   alwaysShowContent: 0
 --- !u!1 &316113015
 GameObject:

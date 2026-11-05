@@ -133,6 +133,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3234366815532801810}
+  - component: {fileID: 2746230531277418843}
+  - component: {fileID: 8892976974177498141}
+  - component: {fileID: 2530899108482092640}
+  - component: {fileID: 7014182838942812027}
   m_Layer: 0
   m_Name: Thermometer
   m_TagString: Untagged
@@ -163,6 +167,98 @@ Transform:
   - {fileID: 6452990347560191583}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2746230531277418843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965989375035889210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7c9304f3cf2cf4dace2c2d8635b171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartMoveAnimation
+  animationName: LidSlideOff
+  part: {fileID: 7694635833238833715}
+  space: {fileID: 0}
+  direction: {x: 0, y: -1, z: 0}
+  distance: 0.025
+  reverse: 0
+  pressAndRelease: 0
+  duration: 1.2
+  holdAtEnd: 0.8
+  pauseBeforeRepeat: 0.5
+  loop: 1
+--- !u!114 &8892976974177498141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965989375035889210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7c9304f3cf2cf4dace2c2d8635b171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartMoveAnimation
+  animationName: LidSlideOn
+  part: {fileID: 7694635833238833715}
+  space: {fileID: 0}
+  direction: {x: 0, y: -1, z: 0}
+  distance: 0.025
+  reverse: 1
+  pressAndRelease: 0
+  duration: 1.2
+  holdAtEnd: 0.8
+  pauseBeforeRepeat: 0.5
+  loop: 1
+--- !u!114 &2530899108482092640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965989375035889210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7c9304f3cf2cf4dace2c2d8635b171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartMoveAnimation
+  animationName: "BatteryLiftOut\t"
+  part: {fileID: 8750388889159210371}
+  space: {fileID: 0}
+  direction: {x: 0, y: 0, z: -1}
+  distance: 0.02
+  reverse: 0
+  pressAndRelease: 0
+  duration: 1.2
+  holdAtEnd: 0.8
+  pauseBeforeRepeat: 0.5
+  loop: 1
+--- !u!114 &7014182838942812027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965989375035889210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7c9304f3cf2cf4dace2c2d8635b171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartMoveAnimation
+  animationName: BatteryDropIn
+  part: {fileID: 8750388889159210371}
+  space: {fileID: 0}
+  direction: {x: 0, y: 0, z: -1}
+  distance: 0.025
+  reverse: 1
+  pressAndRelease: 0
+  duration: 1.2
+  holdAtEnd: 0.8
+  pauseBeforeRepeat: 0.5
+  loop: 1
 --- !u!1 &5020268956136316099
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,9 +404,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -1012621912036017385, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
       propertyPath: m_Name
       value: Thermometer
+      objectReference: {fileID: 0}
+    - target: {fileID: 6552741683430871507, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -320,5 +424,15 @@ PrefabInstance:
 --- !u!4 &6547979908326792754 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
+  m_PrefabInstance: {fileID: 6725458046384601561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7694635833238833715 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4007490018518676458, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
+  m_PrefabInstance: {fileID: 6725458046384601561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8750388889159210371 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6612972963147289510, guid: fd477b80849347c47a4ce6f59fd4592d, type: 3}
   m_PrefabInstance: {fileID: 6725458046384601561}
   m_PrefabAsset: {fileID: 0}

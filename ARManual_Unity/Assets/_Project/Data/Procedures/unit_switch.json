@@ -6,15 +6,19 @@
       "text": "Place the thermometer face-down on the table.",
       "target": "FaceDown",
       "highlight": [],
+      "outline": [],
       "pointAt": [],
+      "hide": [],
       "animation": "",
       "xray": false
     },
     {
       "text": "Press the button at the top right.",
       "target": "FaceDown",
-      "highlight": ["UnitButton"],
+      "highlight": [],
+      "outline": ["UnitButton"],
       "pointAt": [],
+      "hide": [],
       "animation": "ButtonPress",
       "xray": false
     },
@@ -22,7 +26,9 @@
       "text": "Turn the device over to see the temperature in the new unit.",
       "target": "FaceUp",
       "highlight": [],
+      "outline": [],
       "pointAt": ["Display_TemperatureUnit"],
+      "hide": [],
       "animation": "",
       "xray": false
     }
