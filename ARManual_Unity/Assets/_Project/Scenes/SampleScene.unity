@@ -159,7 +159,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 65631460}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a9b3c83de6a3f44a9389d916f8bf091, type: 3}
   m_Name: 
@@ -191,13 +191,15 @@ MonoBehaviour:
   highlightMaterial: {fileID: 2100000, guid: c1d18e144a9a34e499d0ad0eb937a822, type: 2}
   xrayParts:
   - part: Battery
-    material: {fileID: 2100000, guid: 88881b36e1179fe4abe1c7c6b0e40dbf, type: 2}
+    material: {fileID: 2100000, guid: b03e2dcd207e8214392875801aa83259, type: 2}
+  - part: BatteryCavity
+    material: {fileID: 2100000, guid: d84375bba74a0634d84f22827336d5d3, type: 2}
   pointerPrefab: {fileID: 0}
   pointerSize: 0.006
   ringGap: 0.002
   ringWidth: 0.0015
   ringLift: 0.0003
-  alwaysShowContent: 0
+  alwaysShowContent: 1
 --- !u!1 &316113015
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,6 +798,77 @@ MonoBehaviour:
   mDatasetName: Vuforia/Termometer_FaceUp.xml
   mCastedBehaviour: {fileID: 1621746157}
   mModelTargetPreview: {fileID: 0}
+--- !u!1 &1798545877
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1798545880}
+  - component: {fileID: 1798545879}
+  - component: {fileID: 1798545878}
+  m_Layer: 0
+  m_Name: ManualUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1798545878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798545877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671c73abeed8f8c4585bc840c9b2d544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ManualUI
+  engine: {fileID: 65631463}
+  messageSeconds: 4
+  maxSubtitles: 2
+--- !u!114 &1798545879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798545877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 48c7e13f6ad9fa54cb3226a19143a711, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 4cf81aacee0a61849ab860d2779b523e, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &1798545880
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798545877}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -806,3 +879,4 @@ SceneRoots:
   - {fileID: 1621746158}
   - {fileID: 1407001544}
   - {fileID: 65631461}
+  - {fileID: 1798545880}

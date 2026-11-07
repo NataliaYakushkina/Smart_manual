@@ -8,6 +8,7 @@
       "highlight": [],
       "outline": [],
       "pointAt": [],
+      "show": [],
       "hide": [],
       "animation": "",
       "xray": false
@@ -18,6 +19,7 @@
       "highlight": ["BatteryLid"],
       "outline": [],
       "pointAt": [],
+      "show": [],
       "hide": [],
       "animation": "LidSlideOff",
       "xray": true
@@ -25,9 +27,10 @@
     {
       "text": "Remove the old battery.",
       "target": "FaceDown",
-      "highlight": ["Battery"],
+      "highlight": [],
       "outline": [],
       "pointAt": [],
+      "show": ["Battery"],
       "hide": ["BatteryLid"],
       "animation": "BatteryLiftOut",
       "xray": false
@@ -35,9 +38,10 @@
     {
       "text": "Insert a new AAA battery, + to the left.",
       "target": "FaceDown",
-      "highlight": ["Battery"],
+      "highlight": [],
       "outline": [],
       "pointAt": ["Polarity_Plus", "Polarity_Minus"],
+      "show": ["Battery"],
       "hide": ["BatteryLid"],
       "animation": "BatteryDropIn",
       "xray": false
@@ -48,6 +52,7 @@
       "highlight": ["BatteryLid"],
       "outline": [],
       "pointAt": [],
+      "show": [],
       "hide": [],
       "animation": "LidSlideOn",
       "xray": false
@@ -58,6 +63,7 @@
       "highlight": [],
       "outline": [],
       "pointAt": ["Display_Temperature"],
+      "show": [],
       "hide": [],
       "animation": "",
       "xray": false

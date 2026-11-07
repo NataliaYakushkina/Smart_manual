@@ -1,0 +1,46 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="ManualScreen.uss" />
+
+    <!-- Layout A: full camera view. Step card on top, subtitles and buttons at the bottom. -->
+    <ui:VisualElement name="root" class="root" picking-mode="Ignore">
+
+        <ui:VisualElement name="top" class="top" picking-mode="Ignore">
+            <ui:VisualElement name="banner" class="banner hidden">
+                <ui:Label name="banner-text" class="banner-text" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="card" class="card">
+                <ui:VisualElement class="card-header">
+                    <ui:Label name="card-label" class="card-label" text="FIND YOUR DEVICE" />
+                    <ui:VisualElement class="card-links">
+                        <ui:Button name="back" class="link" text="Back" />
+                        <ui:Button name="exit" class="link" text="Exit" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label name="card-text" class="card-text" />
+                <ui:VisualElement name="progress" class="progress">
+                    <ui:VisualElement name="progress-fill" class="progress-fill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="bottom" class="bottom" picking-mode="Ignore">
+            <ui:VisualElement name="subtitles" class="subtitles" picking-mode="Ignore" />
+            <ui:VisualElement name="menu" class="menu" picking-mode="Ignore" />
+
+            <ui:VisualElement name="bar" class="bar" picking-mode="Ignore">
+                <ui:Button name="repeat" class="nav" text="Repeat" />
+                <ui:Button name="mic" class="mic">
+                    <ui:VisualElement class="mic-icon" picking-mode="Ignore">
+                        <ui:VisualElement class="mic-head" picking-mode="Ignore" />
+                        <ui:VisualElement class="mic-arc" picking-mode="Ignore" />
+                        <ui:VisualElement class="mic-stem" picking-mode="Ignore" />
+                        <ui:VisualElement class="mic-base" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:Button>
+                <ui:Button name="done" class="nav nav--primary" text="Done" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

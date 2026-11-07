@@ -20,6 +20,7 @@ public class ProcedureStep
     public string[] highlight;      // CAD part names exactly as in Fusion, e.g. "BatteryLid"
     public string[] outline;        // parts that get an orange ring around them instead, e.g. "UnitButton"
     public string[] pointAt;        // marker names, e.g. "Display_Temperature"
+    public string[] show;           // parts drawn in their own look, not orange, e.g. "Battery"
     public string[] hide;           // parts that are already removed in this step, e.g. "BatteryLid"
     public string animation;        // name of a StepAnimation, or empty
     public bool xray;               // show the battery compartment in x-ray mode

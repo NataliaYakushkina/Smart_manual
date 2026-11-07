@@ -54,7 +54,7 @@ public class StepEngine : MonoBehaviour
     [SerializeField] Material highlightMaterial;
 
     [Tooltip("Parts that are only drawn in x-ray mode (\"xray\": true in the step), e.g. Battery and BatteryCavity. " +
-             "Outside x-ray mode they are switched off, unless they are highlighted.")]
+             "Outside x-ray mode they are invisible housing like every other part.")]
     [SerializeField] XrayPart[] xrayParts;
 
     [Tooltip("Optional: object placed on a marker by PointAt. If empty, a small sphere is used.")]
@@ -95,11 +95,19 @@ public class StepEngine : MonoBehaviour
         (active.TargetStatus.Status == Status.TRACKED ||
          active.TargetStatus.Status == Status.EXTENDED_TRACKED);
 
+    /// <summary>The overlay is on screen: device found (or Always Show Content while testing).</summary>
+    public bool IsContentVisible => content != null && content.gameObject.activeSelf;
+
     readonly List<Procedure> procedures = new List<Procedure>();
     readonly Dictionary<string, Transform> parts = new Dictionary<string, Transform>();
     readonly Dictionary<string, StepAnimation> animations = new Dictionary<string, StepAnimation>();
     readonly List<GameObject> pointers = new List<GameObject>();
     readonly List<GameObject> outlines = new List<GameObject>();
+
+    // Markers with their own look: child objects made in the prefab (e.g. a "+" for Polarity_Plus).
+    // They are hidden until PointAt shows them, and are drawn as they are (never turned into occluder).
+    readonly HashSet<Transform> customMarkers = new HashSet<Transform>();
+    readonly List<Transform> shownMarkers = new List<Transform>();
     Bounds deviceBounds;    // whole model, in content space; tells which side of a part faces outwards
 
     // Look of every part. ApplyLooks() decides each renderer from these sets.
@@ -107,6 +115,7 @@ public class StepEngine : MonoBehaviour
     readonly Dictionary<Renderer, Material> xrayLook = new Dictionary<Renderer, Material>();
     readonly HashSet<Renderer> highlighted = new HashSet<Renderer>();
     readonly HashSet<Renderer> hidden = new HashSet<Renderer>();
+    readonly HashSet<Renderer> shown = new HashSet<Renderer>();
 
     ObserverBehaviour active;
     StepAnimation playing;
@@ -183,8 +192,19 @@ public class StepEngine : MonoBehaviour
                 animations.Add(key, a);
         }
 
+        // Markers the procedures point at that have child objects bring their own look.
+        var markerLooks = new HashSet<Renderer>();
+        foreach (var p in procedures)
+            foreach (var s in p.steps)
+                foreach (var n in s.pointAt ?? Array.Empty<string>())
+                    if (parts.TryGetValue(n, out var marker) && marker.childCount > 0 && customMarkers.Add(marker))
+                    {
+                        markerLooks.UnionWith(marker.GetComponentsInChildren<Renderer>(true));
+                        SetChildrenActive(marker, false);
+                    }
+
         foreach (var r in content.GetComponentsInChildren<Renderer>(true))
-            originals[r] = r.sharedMaterials;
+            if (!markerLooks.Contains(r)) originals[r] = r.sharedMaterials;
 
         LocalBounds(content, out deviceBounds);
 
@@ -224,6 +244,10 @@ public class StepEngine : MonoBehaviour
             foreach (var n in s.pointAt ?? Array.Empty<string>())
                 if (!parts.ContainsKey(n))
                     Debug.LogWarning($"StepEngine: {where}: no marker named '{n}' in the model.", this);
+
+            foreach (var n in s.show ?? Array.Empty<string>())
+                if (!parts.ContainsKey(n))
+                    Debug.LogWarning($"StepEngine: {where}: no part named '{n}' to show.", this);
 
             foreach (var n in s.hide ?? Array.Empty<string>())
                 if (!parts.ContainsKey(n))
@@ -372,6 +396,14 @@ public class StepEngine : MonoBehaviour
             return false;
         }
 
+        // The marker has its own look in the prefab (e.g. a "+"): show it instead of a sphere.
+        if (customMarkers.Contains(marker))
+        {
+            SetChildrenActive(marker, true);
+            shownMarkers.Add(marker);
+            return true;
+        }
+
         GameObject pointer;
         if (pointerPrefab != null)
         {
@@ -397,6 +429,16 @@ public class StepEngine : MonoBehaviour
         foreach (var p in pointers)
             if (p != null) Destroy(p);
         pointers.Clear();
+
+        foreach (var m in shownMarkers)
+            if (m != null) SetChildrenActive(m, false);
+        shownMarkers.Clear();
+    }
+
+    static void SetChildrenActive(Transform parent, bool active)
+    {
+        foreach (Transform child in parent)
+            child.gameObject.SetActive(active);
     }
 
     /// <summary>Hides a part that is already removed in reality, e.g. the lid while the battery is changed.</summary>
@@ -415,9 +457,29 @@ public class StepEngine : MonoBehaviour
         return true;
     }
 
-    public void ShowAllParts()
+    /// <summary>
+    /// Draws a part in its own look (its x-ray material, or the prefab's material), not orange,
+    /// e.g. the battery while it lifts out.
+    /// </summary>
+    public bool ShowPart(string partName)
+    {
+        if (!parts.TryGetValue(partName, out var part))
+        {
+            Debug.LogWarning($"StepEngine: no part named '{partName}'.", this);
+            return false;
+        }
+
+        foreach (var r in part.GetComponentsInChildren<Renderer>(true))
+            shown.Add(r);
+        ApplyLooks();
+        return true;
+    }
+
+    /// <summary>Undoes HidePart and ShowPart: every part back to the default look.</summary>
+    public void ResetParts()
     {
         hidden.Clear();
+        shown.Clear();
         ApplyLooks();
     }
 
@@ -434,8 +496,10 @@ public class StepEngine : MonoBehaviour
     /// Sets the look of every part. First rule that fits wins:
     ///   hidden      -> not drawn (removed in reality, e.g. the lid in steps 3-4)
     ///   highlighted -> orange
-    ///   x-ray part  -> its x-ray material while x-ray is on, otherwise not drawn
+    ///   shown       -> its own look ("show" in the step, e.g. the battery while it lifts out)
+    ///   x-ray part  -> its own look while x-ray is on
     ///   everything else -> occluder: invisible, the real device shows through
+    /// "Own look" = the material in Xray Parts, or the prefab's material if that is empty.
     /// </summary>
     void ApplyLooks()
     {
@@ -452,10 +516,11 @@ public class StepEngine : MonoBehaviour
             {
                 SetLook(r, highlightMaterial);
             }
-            else if (xrayLook.TryGetValue(r, out var xray))
+            else if (shown.Contains(r) || (XrayOn && xrayLook.ContainsKey(r)))
             {
-                r.enabled = XrayOn;
-                if (XrayOn) r.sharedMaterials = xray != null ? Fill(xray, kv.Value.Length) : kv.Value;
+                xrayLook.TryGetValue(r, out var own);
+                r.enabled = true;
+                r.sharedMaterials = own != null ? Fill(own, kv.Value.Length) : kv.Value;
             }
             else if (occluderMaterial != null)
             {
@@ -487,6 +552,7 @@ public class StepEngine : MonoBehaviour
         foreach (var n in s.highlight ?? Array.Empty<string>()) HighlightPart(n);
         foreach (var n in s.outline ?? Array.Empty<string>()) OutlinePart(n);
         foreach (var n in s.pointAt ?? Array.Empty<string>()) PointAt(n);
+        foreach (var n in s.show ?? Array.Empty<string>()) ShowPart(n);
         foreach (var n in s.hide ?? Array.Empty<string>()) HidePart(n);
         ShowXray(s.xray);
         PlayAnimation(s.animation);
@@ -507,7 +573,7 @@ public class StepEngine : MonoBehaviour
         ClearHighlights();
         ClearPointers();
         ClearOutlines();
-        ShowAllParts();
+        ResetParts();
         ShowXray(false);
     }
 
