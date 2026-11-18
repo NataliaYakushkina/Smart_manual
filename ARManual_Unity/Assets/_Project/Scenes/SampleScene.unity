@@ -187,8 +187,10 @@ MonoBehaviour:
   - key: FaceDown
     target: {fileID: 1407001543}
   defaultTarget: FaceUp
+  highlightStyle: 0
   occluderMaterial: {fileID: 2100000, guid: 0cdb9b6cd7d6c7f4295b28d3920b37b7, type: 2}
-  highlightMaterial: {fileID: 2100000, guid: c1d18e144a9a34e499d0ad0eb937a822, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: d84375bba74a0634d84f22827336d5d3, type: 2}
+  outlinePartMaterial: {fileID: 2100000, guid: d84375bba74a0634d84f22827336d5d3, type: 2}
   xrayParts:
   - part: Battery
     material: {fileID: 2100000, guid: b03e2dcd207e8214392875801aa83259, type: 2}
@@ -196,10 +198,17 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: d84375bba74a0634d84f22827336d5d3, type: 2}
   pointerPrefab: {fileID: 0}
   pointerSize: 0.006
-  ringGap: 0.002
-  ringWidth: 0.0015
+  ringGap: 0.001
+  ringWidth: 0.0013
   ringLift: 0.0003
-  alwaysShowContent: 1
+  outlineMaterial: {fileID: 0}
+  outlineColor: {r: 0.93, g: 0.58, b: 0.07, a: 1}
+  outlineGlowColor: {r: 1, g: 0.92, b: 0.6, a: 1}
+  pulseSpeed: 1.5
+  pulseWidth: 1.4
+  frameInset: 0.0005
+  frameCornerRadius: 0.002
+  alwaysShowContent: 0
 --- !u!1 &316113015
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,6 +807,186 @@ MonoBehaviour:
   mDatasetName: Vuforia/Termometer_FaceUp.xml
   mCastedBehaviour: {fileID: 1621746157}
   mModelTargetPreview: {fileID: 0}
+--- !u!1 &1775436238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1775436240}
+  - component: {fileID: 1775436239}
+  - component: {fileID: 1775436242}
+  - component: {fileID: 1775436241}
+  - component: {fileID: 1775436243}
+  m_Layer: 0
+  m_Name: Assistant
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1775436239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775436238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b71c94186e52b9f4a8eae43108a6e4e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AssistantClient
+  engine: {fileID: 65631463}
+  ui: {fileID: 1798545878}
+  serverUrl: ws://localhost:8765
+  reconnectSeconds: 3
+--- !u!4 &1775436240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775436238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1775436241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775436238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b14931f89e027f4fb3b217d8353ddd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AssistantVoice
+  client: {fileID: 1775436239}
+  prebufferSeconds: 0.15
+  bufferSeconds: 120
+--- !u!82 &1775436242
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775436238}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1775436243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775436238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8c5198dfadddc4bb85d622afe2486c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AssistantMic
+  client: {fileID: 0}
+  voice: {fileID: 0}
+  ui: {fileID: 1798545878}
+  maxSeconds: 15
+  chunkSeconds: 0.1
 --- !u!1 &1798545877
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,3 +1069,4 @@ SceneRoots:
   - {fileID: 1407001544}
   - {fileID: 65631461}
   - {fileID: 1798545880}
+  - {fileID: 1775436240}

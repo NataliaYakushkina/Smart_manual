@@ -203,10 +203,10 @@ Built with UI Toolkit: `Assets/_Project/UI/ManualScreen.uxml` / `.uss`, logic in
 
 - ~~Does the CAD model match the real device within ~1 mm on the outside?~~ Face-up tracking passed, so the outer shape is accurate enough.
 - ~~Battery type and count, and how the lid opens.~~ 1× AAA; lid slides straight down. Open: is there a latch to press?
-- Which Android phone model? (check Vuforia/ARCore support; tracking already works on Natalia's phone)
-- **Vuforia watermark:** with the Basic plan, Model Target builds show "Premium Trial Feature App – Not for Distribution" and a honeycomb pattern. Accept it in the demo video, or ask Vuforia about a student/academic licence or a time-limited Premium trial before recording (build step 8)?
-- LLM provider: keep the provider from the thesis code, or switch.
-- Speech-to-text and text-to-speech: cloud services or Android's built-in ones.
+- ~~Which Android phone model?~~ **Samsung Galaxy S24 FE.** *Natalia (2026-11-18).*
+- ~~**Vuforia watermark**~~ ("Premium Trial Feature App – Not for Distribution", Basic plan): **accepted in the demo video.** *Natalia (2026-11-18).*
+- ~~LLM provider~~: **keep the thesis setup**: OpenAI `gpt-4o-mini` with tool calling, OpenAI TTS (`gpt-4o-mini-tts`, raw PCM to Unity), Python `websockets` server (`python_connector` in the thesis folder). *Natalia (2026-11-18).*
+- ~~Speech-to-text and text-to-speech~~: **voice in both directions, no typing, via OpenAI Realtime speech-to-speech** (`gpt-realtime-2.1-mini`, tool calling; the model's transcripts feed the subtitles). Replaces the thesis's text chat + separate TTS; the thesis WebSocket server, tools and prompt stay the frame. *Natalia (2026-11-18).*
 
 ## 15. Left to the builder
 

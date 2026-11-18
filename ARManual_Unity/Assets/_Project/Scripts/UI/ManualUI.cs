@@ -28,6 +28,7 @@ public class ManualUI : MonoBehaviour
     Button back, exit, repeat, done, mic;
 
     bool lastVisible;
+    Procedure lastProcedure;
     Rect lastSafeArea;
     IVisualElementScheduledItem clearMessage;
 
@@ -93,8 +94,8 @@ public class ManualUI : MonoBehaviour
     {
         if (engine == null) return;
 
-        // Tracking found / lost changes the card and the banner.
-        if (engine.IsContentVisible != lastVisible) Refresh();
+        // Tracking found / lost, or a guide started / stopped by the assistant, changes the screen.
+        if (engine.IsContentVisible != lastVisible || engine.Current != lastProcedure) Refresh();
 
         if (Screen.safeArea != lastSafeArea) ApplySafeArea();
     }
@@ -181,6 +182,7 @@ public class ManualUI : MonoBehaviour
 
         bool visible = engine.IsContentVisible;
         lastVisible = visible;
+        lastProcedure = engine.Current;
 
         var p = engine.Current;
         if (p == null)

@@ -48,3 +48,6 @@ desktop.ini
 # Build output folder and Unity build debug info
 Deployment/
 *_BurstDebugInformation_DoNotShip/
+
+# Vuforia runtime cache (created in Play mode)
+**/QCAR/
