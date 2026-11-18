@@ -45,13 +45,28 @@ public class StepEngine : MonoBehaviour
         public Material material;
     }
 
+    public enum HighlightStyle
+    {
+        [Tooltip("Orange copy of the part.")] Fill,
+        [Tooltip("The part stays real; a pulsing orange frame is drawn inside its edges.")] Outline,
+    }
+
     [Header("Look")]
+    [Tooltip("How \"highlight\" in a step looks. Fill = orange copy of the part. " +
+             "Outline = the real part stays visible, with a pulsing orange frame inside its edges " +
+             "(moves with the part when it is animated).")]
+    [SerializeField] HighlightStyle highlightStyle = HighlightStyle.Fill;
+
     [Tooltip("M_Occluder: invisible material on every part that is not shown. The user sees the real device, " +
              "and 3D content behind it stays hidden, like behind the real housing. Empty = keep the prefab's materials.")]
     [FormerlySerializedAs("baseMaterial")]
     [SerializeField] Material occluderMaterial;
 
     [SerializeField] Material highlightMaterial;
+
+    [Tooltip("Highlight Style = Outline: material of the highlighted part itself, inside the frame " +
+             "(e.g. M_Cavity). Empty = the part is invisible and only the frame is drawn.")]
+    [SerializeField] Material outlinePartMaterial;
 
     [Tooltip("Parts that are only drawn in x-ray mode (\"xray\": true in the step), e.g. Battery and BatteryCavity. " +
              "Outside x-ray mode they are invisible housing like every other part.")]
@@ -66,11 +81,32 @@ public class StepEngine : MonoBehaviour
     [Tooltip("Outline ring: gap between the part's edge and the ring, in metres.")]
     [SerializeField] float ringGap = 0.002f;
 
-    [Tooltip("Outline ring: width of the ring, in metres.")]
+    [Tooltip("Outline ring: width of the line, in metres.")]
     [SerializeField] float ringWidth = 0.0015f;
 
     [Tooltip("Outline ring: how far it floats above the part's surface, in metres.")]
     [SerializeField] float ringLift = 0.0003f;
+
+    [Tooltip("Outline ring: URP Unlit material (M_Outline). Its colour is set by the pulse below.")]
+    [SerializeField] Material outlineMaterial;
+
+    [Tooltip("Outline ring colour at its dimmest.")]
+    [SerializeField] Color outlineColor = new Color(0.93f, 0.58f, 0.07f);
+
+    [Tooltip("Outline ring colour at its brightest.")]
+    [SerializeField] Color outlineGlowColor = new Color(1f, 0.92f, 0.6f);
+
+    [Tooltip("Pulses per second.")]
+    [SerializeField] float pulseSpeed = 1.5f;
+
+    [Tooltip("Line width at the brightest moment, as a multiple of Ring Width.")]
+    [SerializeField] float pulseWidth = 1.4f;
+
+    [Tooltip("Frame on long parts (e.g. the lid): distance of the frame from the part's edge, inwards, in metres.")]
+    [SerializeField] float frameInset = 0.0005f;
+
+    [Tooltip("Frame on long parts: corner radius in metres.")]
+    [SerializeField] float frameCornerRadius = 0.002f;
 
     [Header("Testing")]
     [Tooltip("Show the model even without tracking (for testing in the editor). Switch off for phone builds.")]
@@ -102,7 +138,13 @@ public class StepEngine : MonoBehaviour
     readonly Dictionary<string, Transform> parts = new Dictionary<string, Transform>();
     readonly Dictionary<string, StepAnimation> animations = new Dictionary<string, StepAnimation>();
     readonly List<GameObject> pointers = new List<GameObject>();
-    readonly List<GameObject> outlines = new List<GameObject>();
+    // Outline rings: an even flat ring mesh per part; Update() pulses colour and width.
+    // round: ring outside the part, inner edge fixed at 'radius', grows outwards.
+    // frame: rounded rectangle inside the part, outer edge fixed at halfW/halfH, grows inwards.
+    class Ring { public GameObject go; public Mesh mesh; public bool round; public float radius, halfW, halfH, corner; }
+    readonly List<Ring> outlines = new List<Ring>();
+    Material outlineInstance;   // copy of outlineMaterial whose colour pulses
+    static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
     // Markers with their own look: child objects made in the prefab (e.g. a "+" for Polarity_Plus).
     // They are hidden until PointAt shows them, and are drawn as they are (never turned into occluder).
@@ -141,6 +183,21 @@ public class StepEngine : MonoBehaviour
     {
         foreach (var t in targets)
             if (t.target != null) t.target.OnTargetStatusChanged -= OnTargetStatusChanged;
+        if (outlineInstance != null) Destroy(outlineInstance);
+    }
+
+    /// <summary>Outline pulse (idea from the thesis ObjectHighlighter): colour and width breathe.</summary>
+    void Update()
+    {
+        if (outlines.Count == 0) return;
+
+        float wave = Mathf.Sin(Time.time * pulseSpeed * Mathf.PI * 2f) * 0.5f + 0.5f;   // 0..1
+        Color colour = Color.Lerp(outlineColor, outlineGlowColor, wave);
+        float width = ringWidth * Mathf.Lerp(1f, pulseWidth, wave);
+
+        if (outlineInstance != null) outlineInstance.SetColor(BaseColorId, colour);
+        foreach (var ring in outlines)
+            if (ring.mesh != null) BuildOutline(ring, width);
     }
 
     void LoadProcedures()
@@ -316,6 +373,13 @@ public class StepEngine : MonoBehaviour
             Debug.LogWarning($"StepEngine: no part named '{partName}'.", this);
             return false;
         }
+        if (highlightStyle == HighlightStyle.Outline)
+        {
+            foreach (var r in part.GetComponentsInChildren<Renderer>(true))
+                highlighted.Add(r);
+            ApplyLooks();
+            return OutlinePart(partName);
+        }
         if (highlightMaterial == null)
         {
             Debug.LogWarning("StepEngine: no highlight material assigned.", this);
@@ -331,13 +395,20 @@ public class StepEngine : MonoBehaviour
     public void ClearHighlights()
     {
         highlighted.Clear();
+        ClearOutlines();
         ApplyLooks();
     }
 
+    /// <summary>Material of a highlighted part for the current Highlight Style (null = no own look).</summary>
+    Material HighlightLook() =>
+        highlightStyle == HighlightStyle.Fill ? highlightMaterial : outlinePartMaterial;
+
     /// <summary>
-    /// Draws an orange ring around a part and leaves the part itself real, e.g. the UnitButton.
-    /// The ring lies on the part's outer face: the flattest direction of the part,
-    /// on the side that faces away from the middle of the device.
+    /// Draws a pulsing orange outline and leaves the part itself real.
+    ///   Round part (e.g. UnitButton): a ring just outside the part.
+    ///   Long part (e.g. BatteryLid): a rounded frame inside the part's edges, never outside them.
+    /// The outline lies on the part's outer face (the flattest direction, on the side away from the
+    /// middle of the device) and moves with the part, e.g. when the lid slides off.
     /// </summary>
     public bool OutlinePart(string partName)
     {
@@ -346,9 +417,10 @@ public class StepEngine : MonoBehaviour
             Debug.LogWarning($"StepEngine: no part named '{partName}'.", this);
             return false;
         }
-        if (highlightMaterial == null || !LocalBounds(part, out var b))
+        var material = OutlineMaterial();
+        if (material == null || !LocalBounds(part, out var b))
         {
-            Debug.LogWarning($"StepEngine: cannot outline '{partName}' (no mesh or no highlight material).", this);
+            Debug.LogWarning($"StepEngine: cannot outline '{partName}' (no mesh or no outline material).", this);
             return false;
         }
 
@@ -363,14 +435,45 @@ public class StepEngine : MonoBehaviour
         position[axis] = side > 0 ? b.max[axis] : b.min[axis];
         position += normal * ringLift;
 
-        float radius = 0.5f * Mathf.Max(size[(axis + 1) % 3], size[(axis + 2) % 3]) + ringGap;
+        // The two sides of the part's face, and whether it is round-ish or long.
+        int a = (axis + 1) % 3, c = (axis + 2) % 3;
+        float sizeA = size[a], sizeC = size[c];
+        bool round = Mathf.Max(sizeA, sizeC) < 1.3f * Mathf.Min(sizeA, sizeC);
 
-        var ring = new GameObject("Outline_" + partName, typeof(MeshFilter), typeof(MeshRenderer));
-        ring.transform.SetParent(content, false);
-        ring.transform.localPosition = position;
-        ring.transform.localRotation = Quaternion.FromToRotation(Vector3.forward, normal);
-        ring.GetComponent<MeshFilter>().sharedMesh = BuildRing(radius, radius + ringWidth);
-        ring.GetComponent<MeshRenderer>().sharedMaterial = highlightMaterial;
+        Vector3 up = Vector3.zero;
+        up[c] = 1f;
+
+        var go = new GameObject("Outline_" + partName, typeof(MeshFilter), typeof(MeshRenderer));
+        go.transform.SetParent(content, false);
+        go.transform.localPosition = position;
+        // Flat on the face (z = normal); local x / y run along the part's sides.
+        go.transform.localRotation = Quaternion.LookRotation(normal, up);
+        go.transform.SetParent(part, true);         // moves with the part (animations) and the device
+
+        var ring = new Ring { go = go, round = round };
+        if (round)
+        {
+            ring.radius = 0.5f * Mathf.Max(sizeA, sizeC) + ringGap;
+        }
+        else
+        {
+            // x of the outline = side a, y = side c (LookRotation keeps y along 'up').
+            ring.halfW = Mathf.Max(0.5f * sizeA - frameInset, 0.001f);
+            ring.halfH = Mathf.Max(0.5f * sizeC - frameInset, 0.001f);
+            ring.corner = Mathf.Min(frameCornerRadius, Mathf.Min(ring.halfW, ring.halfH));
+        }
+
+        var mesh = new Mesh { name = "OutlineRing" };
+        mesh.MarkDynamic();
+        ring.mesh = mesh;
+        BuildOutline(ring, ringWidth);
+        go.GetComponent<MeshFilter>().sharedMesh = mesh;
+
+        var mr = go.GetComponent<MeshRenderer>();
+        mr.sharedMaterial = material;
+        mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        mr.receiveShadows = false;
+        mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
         outlines.Add(ring);
         return true;
@@ -380,11 +483,31 @@ public class StepEngine : MonoBehaviour
     {
         foreach (var ring in outlines)
         {
-            if (ring == null) continue;
-            Destroy(ring.GetComponent<MeshFilter>().sharedMesh);
-            Destroy(ring);
+            if (ring.mesh != null) Destroy(ring.mesh);
+            if (ring.go != null) Destroy(ring.go);
         }
         outlines.Clear();
+    }
+
+    /// <summary>One runtime copy of the outline material, so the pulse never changes the asset.</summary>
+    Material OutlineMaterial()
+    {
+        if (outlineInstance != null) return outlineInstance;
+
+        if (outlineMaterial != null)
+        {
+            outlineInstance = new Material(outlineMaterial);
+        }
+        else
+        {
+            var shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null) return highlightMaterial;   // no pulse, but still a ring
+            outlineInstance = new Material(shader);
+        }
+        outlineInstance.name = "Outline (pulse)";
+        // Draw both sides, so the ring shows whichever way it was built.
+        outlineInstance.SetFloat("_Cull", (float)UnityEngine.Rendering.CullMode.Off);
+        return outlineInstance;
     }
 
     /// <summary>Puts a pointer on a marker, e.g. "Display_Temperature".</summary>
@@ -495,7 +618,7 @@ public class StepEngine : MonoBehaviour
     /// <summary>
     /// Sets the look of every part. First rule that fits wins:
     ///   hidden      -> not drawn (removed in reality, e.g. the lid in steps 3-4)
-    ///   highlighted -> orange
+    ///   highlighted -> orange (Fill), or Outline Part Material inside the frame (Outline)
     ///   shown       -> its own look ("show" in the step, e.g. the battery while it lifts out)
     ///   x-ray part  -> its own look while x-ray is on
     ///   everything else -> occluder: invisible, the real device shows through
@@ -512,9 +635,9 @@ public class StepEngine : MonoBehaviour
             {
                 r.enabled = false;
             }
-            else if (highlighted.Contains(r) && highlightMaterial != null)
+            else if (highlighted.Contains(r) && HighlightLook() != null)
             {
-                SetLook(r, highlightMaterial);
+                SetLook(r, HighlightLook());
             }
             else if (shown.Contains(r) || (XrayOn && xrayLook.ContainsKey(r)))
             {
@@ -679,41 +802,65 @@ public class StepEngine : MonoBehaviour
         return any;
     }
 
-    /// <summary>Flat ring in the XY plane, visible from both sides.</summary>
-    static Mesh BuildRing(float inner, float outer, int segments = 48)
+    /// <summary>Updates an outline mesh for the given line width.</summary>
+    static void BuildOutline(Ring ring, float width)
     {
-        var vertices = new List<Vector3>();
-        var normals = new List<Vector3>();
-        var triangles = new List<int>();
-
-        for (int face = 0; face < 2; face++)
+        if (ring.round)
         {
-            int start = vertices.Count;
-            Vector3 n = face == 0 ? Vector3.forward : Vector3.back;
-            for (int i = 0; i < segments; i++)
+            // Ring: inner edge stays at the gap, the line grows outwards.
+            float outer = ring.radius + width;
+            SetFrame(ring.mesh, outer, outer, outer, width);
+        }
+        else
+        {
+            // Frame: outer edge stays inside the part, the line grows inwards.
+            float w = Mathf.Min(width, Mathf.Min(ring.halfW, ring.halfH) * 0.9f);
+            SetFrame(ring.mesh, ring.halfW, ring.halfH, Mathf.Max(ring.corner, w), w);
+        }
+    }
+
+    /// <summary>
+    /// Flat rounded-rectangle band in the XY plane: outer half size (halfW, halfH), outer corner radius,
+    /// line width. A circle is the case halfW = halfH = corner. Same width all the way round.
+    /// </summary>
+    static void SetFrame(Mesh mesh, float halfW, float halfH, float corner, float width, int perCorner = 16)
+    {
+        int n = perCorner * 4;
+        var vertices = new Vector3[n * 2];
+        var normals = new Vector3[n * 2];
+        float innerCorner = Mathf.Max(corner - width, 0f);
+
+        for (int k = 0; k < 4; k++)
+        {
+            // Corner centres: top-right, top-left, bottom-left, bottom-right.
+            float cx = (k == 0 || k == 3 ? 1f : -1f) * (halfW - corner);
+            float cy = (k < 2 ? 1f : -1f) * (halfH - corner);
+            for (int j = 0; j < perCorner; j++)
             {
-                float a = i * Mathf.PI * 2f / segments;
-                var dir = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f);
-                vertices.Add(dir * inner);
-                vertices.Add(dir * outer);
-                normals.Add(n);
-                normals.Add(n);
-            }
-            for (int i = 0; i < segments; i++)
-            {
-                int a = start + 2 * i, b = a + 1;
-                int c = start + 2 * ((i + 1) % segments), d = c + 1;
-                if (face == 0) triangles.AddRange(new[] { a, b, c, b, d, c });
-                else triangles.AddRange(new[] { a, c, b, b, c, d });
+                float angle = (k + j / (float)(perCorner - 1)) * Mathf.PI * 0.5f;
+                var dir = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+                var centre = new Vector3(cx, cy, 0f);
+                int i = k * perCorner + j;
+                vertices[2 * i] = centre + dir * innerCorner;
+                vertices[2 * i + 1] = centre + dir * corner;
+                normals[2 * i] = normals[2 * i + 1] = Vector3.back;
             }
         }
+        mesh.vertices = vertices;
+        mesh.normals = normals;
 
-        var mesh = new Mesh { name = "OutlineRing" };
-        mesh.SetVertices(vertices);
-        mesh.SetNormals(normals);
-        mesh.SetTriangles(triangles, 0);
+        if (mesh.triangles.Length == 0)
+        {
+            var triangles = new int[n * 6];
+            for (int i = 0; i < n; i++)
+            {
+                int a = 2 * i, b = a + 1, c = 2 * ((i + 1) % n), d = c + 1;
+                triangles[6 * i] = a; triangles[6 * i + 1] = b; triangles[6 * i + 2] = c;
+                triangles[6 * i + 3] = b; triangles[6 * i + 4] = d; triangles[6 * i + 5] = c;
+            }
+            mesh.triangles = triangles;
+        }
         mesh.RecalculateBounds();
-        return mesh;
     }
 
     static Material[] Fill(Material m, int count)
