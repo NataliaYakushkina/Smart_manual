@@ -51,3 +51,8 @@ Deployment/
 
 # Vuforia runtime cache (created in Play mode)
 **/QCAR/
+
+# Vuforia license key lives here; each developer adds their own key
+# (ARCamera > Open Vuforia Engine configuration > App License Key)
+**/Assets/Resources/VuforiaConfiguration.asset
+**/Assets/Resources/VuforiaConfiguration.asset.meta
